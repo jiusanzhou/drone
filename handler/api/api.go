@@ -147,6 +147,14 @@ func (s Server) Handler() http.Handler {
 	cors := cors.New(corsOpts)
 	r.Use(cors.Handler)
 
+	r.Route("/repos/{owner}/{name}/create", func(r chi.Router) {
+		r.Use(acl.CheckWriteAccess())
+
+		r.With(
+			acl.CheckAdminAccess(),
+		).Post("/", repos.HandleCreate(s.Repos))
+	})
+
 	r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 		r.Use(acl.InjectRepository(s.Repoz, s.Repos, s.Perms))
 		r.Use(acl.CheckReadAccess())
@@ -167,11 +175,6 @@ func (s Server) Handler() http.Handler {
 		r.With(
 			acl.CheckAdminAccess(),
 		).Post("/repair", repos.HandleRepair(s.Hooks, s.Repoz, s.Repos, s.Users, s.System.Link))
-		
-		// Add a repo by hands
-		r.With(
-			acl.CheckAdminAccess(),
-		).Post("/create", repos.HandleCreate(s.Repos))
 
 		r.Route("/builds", func(r chi.Router) {
 			r.Get("/", builds.HandleList(s.Repos, s.Builds))

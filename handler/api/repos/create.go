@@ -55,7 +55,7 @@ func HandleCreate(repos core.RepositoryStore) http.HandlerFunc {
 			logger.FromRequest(r).
 				WithError(err).
 				WithField("repository", slug).
-				Warnln("api: cannot update repository")
+				Warnln("api: cannot create repository")
 			return
 		}
 
