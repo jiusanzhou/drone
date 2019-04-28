@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/drone/drone/core"
