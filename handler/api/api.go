@@ -150,6 +150,12 @@ func (s Server) Handler() http.Handler {
 	// my inject of repos
 	r.Route("/-", func(r chi.Router) {
 		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
+			r.Use(acl.InjectRepository(s.Repoz, s.Repos, s.Perms))
+			r.Use(acl.CheckReadAccess())
+			r.Get("/", repos.HandleFind())
+		}
+		
+		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 			r.Use(acl.CheckWriteAccess())
 			r.Use(acl.CheckAdminAccess())
 			r.Post("/", repos.HandleRepoCreate(s.Repos))
