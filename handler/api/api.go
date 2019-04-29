@@ -152,25 +152,25 @@ func (s Server) Handler() http.Handler {
 		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 
 			r.With(
-				acl.InjectRepository(s.Repoz, s.Repos, s.Perms), 
-				acl.CheckReadAccess()
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms),
+				acl.CheckReadAccess(),
 			).Get("/", repos.HandleFind())
 
 			r.With(
 				acl.CheckWriteAccess(),
-				acl.CheckAdminAccess()
+				acl.CheckAdminAccess(),
 			).Post("/", repos.HandleRepoCreate(s.Repos, s.Perms))
 
 			r.With(
 				acl.InjectRepository(s.Repoz, s.Repos, s.Perms),
 				acl.CheckWriteAccess(),
-				acl.CheckAdminAccess()
+				acl.CheckAdminAccess(),
 			).Delete("/", repos.HandleRepoDelete(s.Repos, s.Perms))
 
 			r.With(
 				acl.InjectRepository(s.Repoz, s.Repos, s.Perms),
 				acl.CheckWriteAccess(),
-				acl.CheckAdminAccess()
+				acl.CheckAdminAccess(),
 			).Patch("/", repos.HandleRepoUpdate(s.Repos, s.Perms))
 		})
 	})
