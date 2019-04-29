@@ -29,7 +29,7 @@ type (
 
 // HandleRepoCreate returns an http.HandlerFunc that processes http
 // requests to create a repository to the currently authenticated user.
-func HandleRepoCreate(repos core.RepositoryStore) http.HandlerFunc {
+func HandleRepoCreate(repos core.RepositoryStore, perms core.PermStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			owner = chi.URLParam(r, "owner")
@@ -100,6 +100,28 @@ func HandleRepoCreate(repos core.RepositoryStore) http.HandlerFunc {
 			repo.Timeout = 60
 		}
 
+		now := time.Now().Unix()
+		// create perm
+		perm := &core.Perm{
+			UserID: user.ID,
+			RepoUID: repo.UID,
+			Read: true,
+			Write: true,
+			Admin: true,
+			Synced: now,
+			Created: now,
+			Updated: now,
+		}
+		err = perms.Update(r.Context(), perm)
+		if err != nil {
+			render.InternalError(w, err)
+			logger.FromRequest(r).
+				WithError(err).
+				WithField("repository", slug).
+				Warnln("api: cannot cache repository permissions")
+			return
+		}
+
 		err = repos.Create(r.Context(), repo)
 		if err != nil {
 			render.InternalError(w, err)
@@ -115,7 +137,7 @@ func HandleRepoCreate(repos core.RepositoryStore) http.HandlerFunc {
 }
 
 // HandleRepoUpdate ...
-func HandleRepoUpdate(repos core.RepositoryStore) http.HandlerFunc {
+func HandleRepoUpdate(repos core.RepositoryStore, perms core.PermStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			owner = chi.URLParam(r, "owner")
@@ -168,7 +190,7 @@ func HandleRepoUpdate(repos core.RepositoryStore) http.HandlerFunc {
 }
 
 // HandleRepoDelete ...
-func HandleRepoDelete(repos core.RepositoryStore) http.HandlerFunc {
+func HandleRepoDelete(repos core.RepositoryStore, perms core.PermStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			owner = chi.URLParam(r, "owner")
@@ -185,6 +207,13 @@ func HandleRepoDelete(repos core.RepositoryStore) http.HandlerFunc {
 				WithField("name", name).
 				Debugln("api: repository not found")
 			return
+		}
+
+		// else get the cached permissions from the database
+		// for the user and repository.
+		perm, err := perms.Find(r.Context(), repo.UID, repo.UserID)
+		if err == nil {
+			perms.Delete(r.Context(), perm)
 		}
 
 		err = repos.Delete(r.Context(), repo)

@@ -158,9 +158,9 @@ func (s Server) Handler() http.Handler {
 		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 			r.Use(acl.CheckWriteAccess())
 			r.Use(acl.CheckAdminAccess())
-			r.Post("/", repos.HandleRepoCreate(s.Repos))
-			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Delete("/", repos.HandleRepoDelete(s.Repos))
-			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Patch("/", repos.HandleRepoUpdate(s.Repos))
+			r.Post("/", repos.HandleRepoCreate(s.Repos, s.Perms))
+			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Delete("/", repos.HandleRepoDelete(s.Repos, s.Perms))
+			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Patch("/", repos.HandleRepoUpdate(s.Repos, s.Perms))
 		})
 	})
 
