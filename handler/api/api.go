@@ -150,17 +150,28 @@ func (s Server) Handler() http.Handler {
 	// my inject of repos
 	r.Route("/-", func(r chi.Router) {
 		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
-			r.Use(acl.InjectRepository(s.Repoz, s.Repos, s.Perms))
-			r.Use(acl.CheckReadAccess())
-			r.Get("/", repos.HandleFind())
-		})
 
-		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
-			r.Use(acl.CheckWriteAccess())
-			r.Use(acl.CheckAdminAccess())
-			r.Post("/", repos.HandleRepoCreate(s.Repos, s.Perms))
-			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Delete("/", repos.HandleRepoDelete(s.Repos, s.Perms))
-			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Patch("/", repos.HandleRepoUpdate(s.Repos, s.Perms))
+			r.With(
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms), 
+				acl.CheckReadAccess()
+			).Get("/", repos.HandleFind())
+
+			r.With(
+				r.Use(acl.CheckWriteAccess())
+				r.Use(acl.CheckAdminAccess())
+			).Post("/", repos.HandleRepoCreate(s.Repos, s.Perms))
+
+			r.With(
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms)
+				r.Use(acl.CheckWriteAccess())
+				r.Use(acl.CheckAdminAccess())
+			).Delete("/", repos.HandleRepoDelete(s.Repos, s.Perms))
+
+			r.With(
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms)
+				r.Use(acl.CheckWriteAccess())
+				r.Use(acl.CheckAdminAccess())
+			).Patch("/", repos.HandleRepoUpdate(s.Repos, s.Perms))
 		})
 	})
 
