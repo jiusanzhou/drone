@@ -157,20 +157,20 @@ func (s Server) Handler() http.Handler {
 			).Get("/", repos.HandleFind())
 
 			r.With(
-				r.Use(acl.CheckWriteAccess())
-				r.Use(acl.CheckAdminAccess())
+				acl.CheckWriteAccess(),
+				acl.CheckAdminAccess()
 			).Post("/", repos.HandleRepoCreate(s.Repos, s.Perms))
 
 			r.With(
-				acl.InjectRepository(s.Repoz, s.Repos, s.Perms)
-				r.Use(acl.CheckWriteAccess())
-				r.Use(acl.CheckAdminAccess())
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms),
+				acl.CheckWriteAccess(),
+				acl.CheckAdminAccess()
 			).Delete("/", repos.HandleRepoDelete(s.Repos, s.Perms))
 
 			r.With(
-				acl.InjectRepository(s.Repoz, s.Repos, s.Perms)
-				r.Use(acl.CheckWriteAccess())
-				r.Use(acl.CheckAdminAccess())
+				acl.InjectRepository(s.Repoz, s.Repos, s.Perms),
+				acl.CheckWriteAccess(),
+				acl.CheckAdminAccess()
 			).Patch("/", repos.HandleRepoUpdate(s.Repos, s.Perms))
 		})
 	})
