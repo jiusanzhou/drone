@@ -15,16 +15,15 @@ import (
 
 type (
 	inputCreate struct {
-		ID        string
-		Namespace string
-		Name      string
-		Branch    string
-		Private   bool
-		Clone     string
-		CloneSSH  string
-		Link      string
-		Created   time.Time
-		Updated   time.Time
+		ID        string    `json:"id"`
+		Namespace string    `json:"namespace"`
+		Name      string    `json:"name"`
+		Branch    string    `json:"default_branch"`
+		SCM       string    `json:"scm"`
+		Private   bool      `json:"private"`
+		Clone     string    `json:"git_http_url"`
+		CloneSSH  string    `json:"git_ssh_url"`
+		Link      string    `json:"link"`
 	}
 )
 
@@ -94,7 +93,7 @@ func HandleRepoCreate(repos core.RepositoryStore) http.HandlerFunc {
 		}
 
 		if repo.Config == "" {
-			repo.Config = "config_path"
+			repo.Config = ".drone.yml"
 		}
 
 		if repo.Timeout == 0 {
@@ -149,6 +148,7 @@ func HandleRepoUpdate(repos core.RepositoryStore) http.HandlerFunc {
 
 		// check and purge update
 		repo.ID = oldrepo.ID
+		repo.Updated = time.Now().Unix()
 		// TODO: use oldrepo as default value of repo
 
 		err = repos.Update(r.Context(), repo)
