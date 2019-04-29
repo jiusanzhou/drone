@@ -147,12 +147,15 @@ func (s Server) Handler() http.Handler {
 	cors := cors.New(corsOpts)
 	r.Use(cors.Handler)
 
-	r.Route("/repos/{owner}/{name}/create", func(r chi.Router) {
-		r.Use(acl.CheckWriteAccess())
-
-		r.With(
-			acl.CheckAdminAccess(),
-		).Post("/", repos.HandleCreate(s.Repos))
+	// my inject of repos
+	r.Route("/-", func(r chi.Router) {
+		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
+			r.Use(acl.CheckWriteAccess())
+			r.Use(acl.CheckAdminAccess())
+			r.Post("/", repos.HandleRepoCreate(s.Repos))
+			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Delete("/", repos.HandleRepoDelete(s.Repos))
+			r.With(acl.InjectRepository(s.Repoz, s.Repos, s.Perms)).Patch("/", repos.HandleRepoUpdate(s.Repos))
+		})
 	})
 
 	r.Route("/repos/{owner}/{name}", func(r chi.Router) {
