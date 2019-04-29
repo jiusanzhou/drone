@@ -158,6 +158,7 @@ func HandleRepoUpdate(repos core.RepositoryStore) http.HandlerFunc {
 				WithError(err).
 				WithField("repository", slug).
 				Warnln("api: cannot update repository")
+			return
 		}
 
 		render.JSON(w, repo, 200)
@@ -195,7 +196,7 @@ func HandleRepoDelete(repos core.RepositoryStore) http.HandlerFunc {
 				Warnln("api: cannot delete repository")
 		}
 
-		render.JSON(w, repo, 200)
+		render.JSON(w, nil, 200)
 
 		return 
 	}
