@@ -69,7 +69,7 @@ func HandleCreate(
 			return
 		}
 		var commit *core.Commit
-		if in.Commit == nil {
+		if in.Commit != nil {
 			commit, err = commits.Find(ctx, user, repo.Slug, *in.Commit)
 		} else if in.Ref != nil {
 			commit, err = commits.FindRef(ctx, user, repo.Slug, *in.Ref)
