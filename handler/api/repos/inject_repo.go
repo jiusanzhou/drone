@@ -108,7 +108,7 @@ func HandleRepoCreate(repos core.RepositoryStore, perms core.PermStore) http.Han
 			Read: true,
 			Write: true,
 			Admin: true,
-			Synced: now,
+			Synced: time.Now().AddDate(1000, 0, 0).Unix(), // make sure we never(1000 year) sync the perm
 			Created: now,
 			Updated: now,
 		}
