@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dchest/uniuri"
+	// "github.com/dchest/uniuri"
 
 	"github.com/drone/drone/core"
 	"github.com/drone/drone/handler/api/request"
@@ -61,8 +61,8 @@ func HandleCreate(users core.UserStore) http.HandlerFunc {
 			Created: now,
 			Updated: now,
 
-			Token: uci.Token,
-			Hash: uniuri.NewLen(32),
+			Token: uci.Token, //
+			Hash: uci.Token, // uniuri.NewLen(32),
 		}
 
 		err = users.Create(r.Context(), user)
@@ -138,6 +138,7 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 		}
 		if uui.Token != nil {
 			user.Token = *(uui.Token)
+			user.Hash = *(uui.Token)
 		}
 
 		err = users.Update(r.Context(), user)
