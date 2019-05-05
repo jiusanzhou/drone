@@ -24,16 +24,16 @@ func Create(
 			
 			r.With(
 				acl.InjectRepository(repoz, repos, perms),
-				acl.CheckReadAccess(),
+				// acl.CheckReadAccess(),
 			).Get("/", repospkgo.HandleFind()) // 获取 repo 信息
 
 			r.With(
-				acl.CheckAdminAccess(),
+				// acl.CheckAdminAccess(),
 			).Post("/", repospkg.HandleCreate(repos, perms)) // 创建 repo
 
 			r.With(
 				acl.InjectRepository(repoz, repos, perms),
-				acl.CheckAdminAccess(),
+				// acl.CheckAdminAccess(),
 			).Delete("/", repospkg.HandleDelete(repos, perms)) // 删除 repo
 
 			r.With(
