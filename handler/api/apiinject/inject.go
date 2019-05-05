@@ -33,25 +33,23 @@ func Create(
 
 			r.With(
 				acl.InjectRepository(repoz, repos, perms),
-				acl.CheckWriteAccess(),
 				acl.CheckAdminAccess(),
 			).Delete("/", repospkg.HandleDelete(repos, perms)) // 删除 repo
 
 			r.With(
 				acl.InjectRepository(repoz, repos, perms),
 				acl.CheckWriteAccess(),
-				acl.CheckAdminAccess(),
 			).Patch("/", repospkg.HandleUpdate(repos, perms)) // 更新 repo
 		})
 
 		r.Route("/users", func(r chi.Router) {
 
 			r.With(
-				acl.CheckAdminAccess(),
+				
 			).Post("/", userspkg.HandleCreate(users)) // 添加用户
 
 			r.With(
-				acl.CheckAdminAccess(), // 管理员用户可以删除任意账户,当前用户可以删除自身
+				// 管理员用户可以删除任意账户,当前用户可以删除自身
 			).Delete("/:username", userspkg.HandleDelete(users)) // 删除用户
 
 			r.With(
