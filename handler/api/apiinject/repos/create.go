@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	
+	"github.com/dchest/uniuri"
 
 	"github.com/drone/drone/core"
 	"github.com/drone/drone/handler/api/render"
@@ -100,7 +102,24 @@ func HandleCreate(repos core.RepositoryStore, perms core.PermStore) http.Handler
 			repo.Timeout = 60
 		}
 
+		if repo.UID == "" {
+			repo.UID = uniuri.NewLen(16)
+		}
+
+		// 先创建项目
+		err = repos.Create(r.Context(), repo)
+		if err != nil {
+			render.InternalError(w, err)
+			logger.FromRequest(r).
+				WithError(err).
+				WithField("repository", slug).
+				Warnln("api: cannot create repository")
+			return
+		}
+
 		now := time.Now().Unix()
+
+		// 再创建/更新权限关系
 		// create perm
 		perm := &core.Perm{
 			UserID: user.ID,
@@ -112,23 +131,14 @@ func HandleCreate(repos core.RepositoryStore, perms core.PermStore) http.Handler
 			Created: now,
 			Updated: now,
 		}
-		err = perms.Update(r.Context(), perm)
+
+		err = perms.Create(r.Context(), perm)
 		if err != nil {
 			render.InternalError(w, err)
 			logger.FromRequest(r).
 				WithError(err).
 				WithField("repository", slug).
 				Warnln("api: cannot cache repository permissions")
-			return
-		}
-
-		err = repos.Create(r.Context(), repo)
-		if err != nil {
-			render.InternalError(w, err)
-			logger.FromRequest(r).
-				WithError(err).
-				WithField("repository", slug).
-				Warnln("api: cannot create repository")
 			return
 		}
 
