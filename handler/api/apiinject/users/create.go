@@ -151,6 +151,8 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
+		render.JSON(w, user, 200)
+
 		return
 	}
 }
