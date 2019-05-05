@@ -28,7 +28,6 @@ func Create(
 			).Get("/", repospkgo.HandleFind()) // 获取 repo 信息
 
 			r.With(
-				acl.CheckWriteAccess(),
 				acl.CheckAdminAccess(),
 			).Post("/", repospkg.HandleCreate(repos, perms)) // 创建 repo
 
