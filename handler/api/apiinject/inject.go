@@ -50,11 +50,11 @@ func Create(
 
 			r.With(
 				// 管理员用户可以删除任意账户,当前用户可以删除自身
-			).Delete("/:username", userspkg.HandleDelete(users)) // 删除用户
+			).Delete("/{username}", userspkg.HandleDelete(users)) // 删除用户
 
 			r.With(
 				// 管理员用户可以更新任意账户,当前用户可以更新自身
-			).Patch("/:username", userspkg.HandleUpdate(users))
+			).Patch("/{username}", userspkg.HandleUpdate(users))
 		})
 	}
 }
