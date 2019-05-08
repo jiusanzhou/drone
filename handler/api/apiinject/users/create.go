@@ -27,7 +27,7 @@ type userCreateInput struct {
 type userUpdateInput struct {
 	Username  *string `json:"username"`
 	Email     *string `json:"email"`
-	Avatar    *string `json:"email"`
+	Avatar    *string `json:"avatar"`
 	Token     *string `json:"token"`
 }
 
@@ -49,6 +49,11 @@ func HandleCreate(users core.UserStore) http.HandlerFunc {
 				Debugln("api: cannot unmarshal json input")
 			return
 		}
+
+		// 首先查看该用户是否在远程仓库中存在
+
+		// 先查下是否存在用户
+		// 然后创建并同步所有的项目
 
 		now := time.Now().Unix()
 		user := &core.User{

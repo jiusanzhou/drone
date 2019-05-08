@@ -50,6 +50,7 @@ func HandleCreate(repos core.RepositoryStore, perms core.PermStore) http.Handler
 			return
 		}
 
+		// TODO: 用户读取失败
 		user, _ := request.UserFrom(r.Context())
 
 		src := new(inputCreate)
