@@ -155,7 +155,7 @@ func (s Server) Handler() http.Handler {
 	cors := cors.New(corsOpts)
 	r.Use(cors.Handler)
 
-	r.Route("/-", apiinject.Create(s.Users, s.Perms, s.Repos, s.Repoz, s.Userz, s.Admission, s.Syncer, s.Sender ))
+	r.Route("/-", apiinject.Create(s.Users, s.Perms, s.Repos, s.Repoz, s.Userz, s.Admitter, s.Syncer, s.Webhook))
 
 	r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 		r.Use(acl.InjectRepository(s.Repoz, s.Repos, s.Perms))
