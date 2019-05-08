@@ -13,11 +13,16 @@ import (
 
 // Create ...
 func Create(
-	repoz core.RepositoryService,
-
 	users core.UserStore,
 	perms core.PermStore,
 	repos core.RepositoryStore,
+	
+	repoz core.RepositoryService,
+	userz core.UserService,
+	admission core.AdmissionService,
+	syncer core.Syncer,
+
+	sender core.WebhookSender,
 ) func(r chi.Router) {
 	return func (r chi.Router) {
 		r.Route("/repos/{owner}/{name}", func(r chi.Router) {
