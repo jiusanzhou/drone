@@ -52,6 +52,8 @@ func provideAdmissionPlugin(client *scm.Client, orgs core.OrganizationService, u
 // configuration.
 func provideConfigPlugin(client *scm.Client, contents core.FileService, conf spec.Config) core.ConfigService {
 	return config.Combine(
+		// 先放从文件系统查找
+		config.LocalStorage(""), // TODO: 加上根路径选择
 		config.Global(
 			conf.Yaml.Endpoint,
 			conf.Yaml.Secret,

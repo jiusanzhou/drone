@@ -187,12 +187,15 @@ func (t *triggerer) Trigger(ctx context.Context, repo *core.Repository, base *co
 		},
 	}
 
+	// 从文件系统去找了应该能找到的
 	raw, err := t.config.Find(ctx, req)
 	if err != nil {
 		logger = logger.WithError(err)
 		logger.Warnln("trigger: cannot find yaml")
 		return nil, err
 	}
+
+	// 如果是文件系统开头得去掉?不需要
 
 	// this code is temporarily in place to detect and convert
 	// the legacy yaml configuration file to the new format.
