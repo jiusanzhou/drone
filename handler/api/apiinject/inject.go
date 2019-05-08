@@ -46,7 +46,7 @@ func Create(
 
 			r.With(
 				
-			).Post("/", userspkg.HandleCreate(users)) // 添加用户
+			).Post("/", userspkg.HandleCreate(users, userz, admission, syncer, sender)) // 添加用户
 
 			r.With(
 				// 管理员用户可以删除任意账户,当前用户可以删除自身
