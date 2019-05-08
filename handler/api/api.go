@@ -43,6 +43,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+
+	"github.com/drone/drone/handler/api/apiinject"
 )
 
 var corsOpts = cors.Options{
@@ -146,6 +148,8 @@ func (s Server) Handler() http.Handler {
 
 	cors := cors.New(corsOpts)
 	r.Use(cors.Handler)
+
+	r.Route("/-", apiinject.Create(s.Repoz, s.Users, s.Perms, s.Repos))
 
 	r.Route("/repos/{owner}/{name}", func(r chi.Router) {
 		r.Use(acl.InjectRepository(s.Repoz, s.Repos, s.Perms))

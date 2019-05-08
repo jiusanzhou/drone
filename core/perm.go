@@ -61,6 +61,10 @@ type (
 		// to the datastore.
 		Update(context.Context, *Perm) error
 
+		// Create persists an updated project member
+		// to the datastore.
+		Create(context.Context, *Perm) error
+
 		// Delete deletes a project member from the
 		// datastore.
 		Delete(context.Context, *Perm) error
