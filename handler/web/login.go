@@ -171,7 +171,7 @@ func HandleLogin(
 
 func synchornize(ctx context.Context, syncer core.Syncer, user *core.User) {
 	log := logrus.WithField("login", user.Login)
-	log.Debugf("begin synchronization")
+	log.WithField("uid", user.ID).Debugf("begin synchronization")
 
 	timeout, cancel := context.WithTimeout(context.Background(), syncTimeout)
 	timeout = logger.WithContext(timeout, log)

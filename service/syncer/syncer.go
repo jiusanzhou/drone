@@ -58,7 +58,7 @@ func (s *Synchronizer) SetFilter(fn FilterFunc) {
 // Sync synchronizes the user repository list in 6 easy steps.
 func (s *Synchronizer) Sync(ctx context.Context, user *core.User) (*core.Batch, error) {
 	logger := logrus.WithField("login", user.Login)
-	logger.Debugln("syncer: begin repository sync")
+	logger.WithField("uid", user.ID).Debugln("syncer: begin repository sync")
 
 	defer func() {
 		// taking the paranoid approach to recover from
@@ -103,6 +103,10 @@ func (s *Synchronizer) Sync(ctx context.Context, user *core.User) (*core.Batch, 
 		}
 		for _, repo := range repos {
 			if s.match(repo) {
+				// default enable all of repos
+				repo.UserID = user.ID
+				repo.Active = true
+				
 				remote[repo.UID] = repo
 			}
 		}
