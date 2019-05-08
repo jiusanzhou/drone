@@ -57,6 +57,7 @@ var corsOpts = cors.Options{
 }
 
 func New(
+	admitter core.AdmissionService,
 	builds core.BuildStore,
 	commits core.CommitService,
 	cron core.CronStore,
@@ -80,9 +81,11 @@ func New(
 	system *core.System,
 	triggerer core.Triggerer,
 	users core.UserStore,
+	userz core.UserService,
 	webhook core.WebhookSender,
 ) Server {
 	return Server{
+		Admitter:  admitter,
 		Builds:    builds,
 		Cron:      cron,
 		Commits:   commits,
@@ -106,12 +109,14 @@ func New(
 		System:    system,
 		Triggerer: triggerer,
 		Users:     users,
+		Userz:     userz,
 		Webhook:   webhook,
 	}
 }
 
 // Server is a http.Handler which exposes drone functionality over HTTP.
 type Server struct {
+	Admitter  core.AdmissionService
 	Builds    core.BuildStore
 	Cron      core.CronStore
 	Commits   core.CommitService
@@ -135,6 +140,7 @@ type Server struct {
 	System    *core.System
 	Triggerer core.Triggerer
 	Users     core.UserStore
+	Userz     core.UserService
 	Webhook   core.WebhookSender
 }
 
