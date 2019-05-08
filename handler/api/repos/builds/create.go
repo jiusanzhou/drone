@@ -54,7 +54,8 @@ func HandleCreate(
 			branch = repo.Branch
 		}
 		// expand the branch to a git reference.
-		ref := scm.ExpandRef(branch, "refs/heads")
+		// ref := scm.ExpandRef(branch, "refs/heads")
+		ref := branch
 
 		var commit *core.Commit
 		if sha != "" {
