@@ -6,6 +6,7 @@ import (
 	"github.com/drone/drone/core"
 	"github.com/drone/drone/handler/api/acl"
 	repospkgo "github.com/drone/drone/handler/api/repos"
+	buildspkgo "github.com/drone/drone/handler/api/repos/builds"
 
 	repospkg "github.com/drone/drone/handler/api/apiinject/repos"
 	userspkg "github.com/drone/drone/handler/api/apiinject/users"
@@ -21,6 +22,9 @@ func Create(
 	userz core.UserService,
 	admission core.AdmissionService,
 	syncer core.Syncer,
+
+	commits core.CommitService,
+	triggerer core.Triggerer,
 
 	sender core.WebhookSender,
 ) func(r chi.Router) {
@@ -45,6 +49,19 @@ func Create(
 				acl.InjectRepository(repoz, repos, perms),
 				acl.CheckWriteAccess(),
 			).Patch("/", repospkg.HandleUpdate(repos, perms)) // 更新 repo
+
+			r.With(
+				// What should i do?
+			).Get("/users", repospkg.HandleUsers(repos, perms, users))
+
+			r.With(
+				// What should i do?
+			).Post("/builds", repospkg.HandlerBuildCreate(
+				repos,
+				perms,
+				users,
+				buildspkgo.HandleCreate(repos, commits, triggerer),
+			))
 		})
 
 		r.Route("/users", func(r chi.Router) {
